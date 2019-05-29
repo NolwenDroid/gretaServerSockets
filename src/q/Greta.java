@@ -8,8 +8,10 @@ import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.IOUtils;
 
+import experiments.Nativehook;
+
 public class Greta {
-	static BulpControl bulpControl;
+	BulpControl bulpControl;
 	public Greta() {
 	new Thread (new Runnable() {
 	
@@ -25,14 +27,14 @@ public class Greta {
 		public void run() {
 			bulpControl	= new BulpControl();
 			bulpControl.start();
-			
+			Nativehook nativehook = new Nativehook(bulpControl);
 			
 			
 		}
 	}).start();
 }
 	
-	private static void startListen() {
+	private void startListen() {
 		ServerSocket socket = null;
 		
 		   try {

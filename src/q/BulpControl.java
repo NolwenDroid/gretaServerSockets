@@ -15,13 +15,16 @@ public class BulpControl {
 	Socket mSocket;
 	String off = "{\"id\":1,\"method\":\"set_power\",\"params\":[\"off\", \"smooth\", 500]}\r\n";
 	String on =   "{\"id\":2,\"method\":\"set_power\",\"params\":[\"on\", \"smooth\", 500]}\r\n";
-	//String prop = "{\"id\":1,\"method\":\"get_prop\",\"params\":[\"music_on\"]}\r\n";
+	String toggle =   "{\"id\":3,\"method\":\"toggle\",\"params\":[]}\r\n";
+	
+
+	//Should be 21 params exactly
 	String prop = "{\"id\":4,\"method\":\"get_prop\",\"params\":[\"power\",\"bright\",\"ct\",\"rgb\",\"hue\",\"sat\",\"color_mode\",\"delayoff\",\"flow_params\",\"music_on\",\"name\",\"bg_power\",\"bg_flowing\",\"bg_ct\",\"bg_lmode\",\"bg_bright\",\"bg_rgb\",\"bg_hue\",\"bg_sat\",\"nl_br\",\"active_mode\"]}\r\n";
+	String resultResponse = "\"result\":[\"ok\"]";
+	String setNightMode =  "{\"id\":5,\"method\":\"set_power\",\"params\":[\"on\", \"smooth\", 500,5]}\r\n";
+	String setDayMode =  "{\"id\":6,\"method\":\"set_power\",\"params\":[\"on\", \"smooth\", 500, 1]}\r\n";;
 	private BufferedOutputStream mBos;
 	private BulpParamsModel bulpParamsModel = new BulpParamsModel();
-	public BulpControl() {
-
-	}
 
 	public void start() {
 		new Thread(new Runnable() {
@@ -47,6 +50,9 @@ public class BulpControl {
 								if (bulpPropsResponse!=null && bulpPropsResponse.id==4) {
 									bulpParamsModel.update (bulpPropsResponse);
 								}
+								if (value.contains(resultResponse)) {
+									getProps();
+								}
 							}
 						} catch (IOException e) {
 							// TODO Auto-generated catch block
@@ -67,7 +73,7 @@ public class BulpControl {
 
 	private void write(String command) {
 
-		if (mBos != null && mSocket.isConnected()) {
+		if (mBos != null && mSocket!=null && mSocket.isConnected()) {
 
 			System.out.println(command);
 			try {
@@ -75,6 +81,7 @@ public class BulpControl {
 				System.out.println (String.valueOf(bytes.length));
 				mBos.write(command.getBytes(StandardCharsets.UTF_8));
 				mBos.flush();
+				
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				System.out.println(e.getMessage());
@@ -99,18 +106,38 @@ public class BulpControl {
 		write(prop);
 	}
 
-	private boolean needToOn() {
-
-		return BulpParamsModel.getPowerState();
+	public boolean isOn() {
+		if (bulpParamsModel !=null) {
+			return bulpParamsModel.getPowerState();
+		} else {
+			return false;
+		}
 	}
 
 	public void setLightOnOff() {
-		if (needToOn()) {
-			setLightOn();
-		} else {
-			setLightOff();
-		}
+		write(toggle);
+//		if (isOn()) {
+//			setLightOff();
+//		} else {
+//			setLightOn();
+//		}
 
+	}
+	public void setDayMode() {
+		
+	}
+	public void setNightMode() {
+		
+	}
+	public void changeLightMode() {
+		if (bulpParamsModel !=null) {
+			if (bulpParamsModel.isMoonLight()) {
+				write(setDayMode);
+			} else {
+				write(setNightMode);
+			}
+		}
+		
 	}
 
 }

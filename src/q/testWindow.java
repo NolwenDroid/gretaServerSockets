@@ -4,9 +4,21 @@ import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 
+import org.usb4java.Context;
+import org.usb4java.Device;
+import org.usb4java.DeviceDescriptor;
+import org.usb4java.DeviceList;
+import org.usb4java.LibUsb;
+import org.usb4java.LibUsbException;
+
+import experiments.Nativehook;
+import experiments.usb4java;
+import experiments.usbhid;
+
 public class testWindow {
 
 	private JFrame frame;
+	protected Greta greta;
 
 	/**
 	 * Launch the application.
@@ -17,24 +29,23 @@ public class testWindow {
 				try {
 					testWindow window = new testWindow();
 					window.frame.setVisible(true);
+					window.greta = new Greta();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
 		});
-		Greta greta = new Greta();
+		
+		//usb4java usbforj = new usb4java();
+		//usbhid hid= new usbhid();
+	
+		
 	}
 
-	/**
-	 * Create the application.
-	 */
 	public testWindow() {
 		initialize();
 	}
 
-	/**
-	 * Initialize the contents of the frame.
-	 */
 	private void initialize() {
 		frame = new JFrame();
 		frame.setBounds(100, 100, 450, 300);

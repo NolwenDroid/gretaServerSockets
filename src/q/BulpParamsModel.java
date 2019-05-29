@@ -1,5 +1,7 @@
 package q;
 
+import java.util.ArrayList;
+
 public class 
 	BulpParamsModel {
 	boolean power;
@@ -24,15 +26,24 @@ public class
 	int nightBright;
 	boolean isMoonLight;
 	
-	public static boolean getPowerState() {
-		return false;
+	public  boolean getPowerState() {
+		return power;
+	}
+	public  boolean isMoonLight() {
+		return isMoonLight;
 	}
 
+
 	public void update(BulpPropsResponse bulpPropsResponse) {
-		for (int i = 0; i < bulpPropsResponse.result.size(); i++) {
-			
-			
-		}
+			if (bulpPropsResponse !=null && bulpPropsResponse.result!=null && bulpPropsResponse.result.size()==21) {
+				ArrayList<String> params = bulpPropsResponse.result;
+				String power = params.get(0);
+				this.power = power.equals("on");
+				String mode = params.get(20);
+				isMoonLight = mode.equals("1");
+					
+				
+			}
 
 	}
 
