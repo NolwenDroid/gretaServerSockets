@@ -54,6 +54,13 @@ public class Nativehook {
 				if (keyText.equals("Previous")) {
 					bulpControl.changeLightMode();
 				}
+				if (keyText.equals("Page Up")) {
+					bulpControl.incrementBrightness(true);
+				}
+				if (keyText.equals("Page Down")) {
+					bulpControl.incrementBrightness(false);
+				}
+				
 				
 			}
 		});

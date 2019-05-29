@@ -13,16 +13,19 @@ import com.google.gson.Gson;
 
 public class BulpControl {
 	Socket mSocket;
-	String off = "{\"id\":1,\"method\":\"set_power\",\"params\":[\"off\", \"smooth\", 500]}\r\n";
-	String on =   "{\"id\":2,\"method\":\"set_power\",\"params\":[\"on\", \"smooth\", 500]}\r\n";
-	String toggle =   "{\"id\":3,\"method\":\"toggle\",\"params\":[]}\r\n";
-	
+	private static final String off = "{\"id\":1,\"method\":\"set_power\",\"params\":[\"off\", \"smooth\", 500]}\r\n";
+	private static final String on =   "{\"id\":2,\"method\":\"set_power\",\"params\":[\"on\", \"smooth\", 500]}\r\n";
+	private static final String toggle =   "{\"id\":3,\"method\":\"toggle\",\"params\":[]}\r\n";
+	 
 
 	//Should be 21 params exactly
-	String prop = "{\"id\":4,\"method\":\"get_prop\",\"params\":[\"power\",\"bright\",\"ct\",\"rgb\",\"hue\",\"sat\",\"color_mode\",\"delayoff\",\"flow_params\",\"music_on\",\"name\",\"bg_power\",\"bg_flowing\",\"bg_ct\",\"bg_lmode\",\"bg_bright\",\"bg_rgb\",\"bg_hue\",\"bg_sat\",\"nl_br\",\"active_mode\"]}\r\n";
-	String resultResponse = "\"result\":[\"ok\"]";
-	String setNightMode =  "{\"id\":5,\"method\":\"set_power\",\"params\":[\"on\", \"smooth\", 500,5]}\r\n";
-	String setDayMode =  "{\"id\":6,\"method\":\"set_power\",\"params\":[\"on\", \"smooth\", 500, 1]}\r\n";;
+	private static final String prop = "{\"id\":4,\"method\":\"get_prop\",\"params\":[\"power\",\"bright\",\"ct\",\"rgb\",\"hue\",\"sat\",\"color_mode\",\"delayoff\",\"flow_params\",\"music_on\",\"name\",\"bg_power\",\"bg_flowing\",\"bg_ct\",\"bg_lmode\",\"bg_bright\",\"bg_rgb\",\"bg_hue\",\"bg_sat\",\"nl_br\",\"active_mode\"]}\r\n";
+	private static final String resultResponse = "\"result\":[\"ok\"]";
+	private static final String setNightMode =  "{\"id\":5,\"method\":\"set_power\",\"params\":[\"on\", \"smooth\", 500,5]}\r\n";
+	private static final String setDayMode =  "{\"id\":6,\"method\":\"set_power\",\"params\":[\"on\", \"smooth\", 500, 1]}\r\n";;
+	private static final String dropBrightness = "{\"id\":7,\"method\":\"set_bright\",\"params\":[1, \"smooth\", 200]}\r\n";
+	private static final String maxBrightness = "{\"id\":8,\"method\":\"set_bright\",\"params\":[99, \"smooth\", 200]}\r\n";
+	private static final String setBrightness = "{\"id\":9,\"method\":\"set_bright\",\"params\":[%value, \"smooth\", 200]}\r\n";
 	private BufferedOutputStream mBos;
 	private BulpParamsModel bulpParamsModel = new BulpParamsModel();
 
@@ -133,11 +136,40 @@ public class BulpControl {
 		if (bulpParamsModel !=null) {
 			if (bulpParamsModel.isMoonLight()) {
 				write(setDayMode);
+				write (dropBrightness);
 			} else {
 				write(setNightMode);
+				write (maxBrightness);
 			}
 		}
 		
+	}
+	public void incrementBrightness(boolean isIncrement) {
+		if (bulpParamsModel !=null) {
+			int oldBrightness = 0;
+			int newBrightness = 0;
+			if (bulpParamsModel.isMoonLight()) {
+				oldBrightness = bulpParamsModel.nightBright;
+			} else {
+				oldBrightness = bulpParamsModel.bright;
+			}
+			if (isIncrement) {
+				newBrightness=oldBrightness+20;
+			} else {
+				newBrightness=oldBrightness -20;
+			}
+			if (newBrightness<1) {
+				newBrightness =1;
+			}
+			if (newBrightness >99) {
+				newBrightness = 99;
+			}
+			if (oldBrightness != newBrightness) {
+				write (setBrightness.replace("%value",String.valueOf(newBrightness)));
+				System.out.println("old " + String.valueOf(oldBrightness) + " newBrightness " + String.valueOf(newBrightness));	
+			}
+			
+		}
 	}
 
 }

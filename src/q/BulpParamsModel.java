@@ -41,8 +41,8 @@ public class
 				this.power = power.equals("on");
 				String mode = params.get(20);
 				isMoonLight = mode.equals("1");
-					
-				
+				bright = Integer.valueOf(params.get(1));
+				nightBright = Integer.valueOf(params.get(19));
 			}
 
 	}
